@@ -8,7 +8,7 @@ st.set_page_config(page_title="Quiz Bất động sản", page_icon="⚡", layou
 @st.cache_data
 def get_data():
     # Đọc file và loại bỏ các dòng hoàn toàn trống
-    df = pd.read_csv("merged_all_quizzes.csv").dropna(how='all')
+    df = pd.read_csv("alltest.csv").dropna(how='all')
     
     # 🛡️ SỬA LỖI TẠI ĐÂY: Làm sạch tên cột (xóa khoảng trắng, ký tự ẩn)
     df.columns = df.columns.str.strip().str.replace('^[^a-zA-Z0-9]+', '', regex=True)
