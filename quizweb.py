@@ -118,4 +118,5 @@ with col2:
                 st.session_state.answered = False
                 st.rerun()
             else:
-                st
+                st.balloons()
+                st.success("Bạn đã hoàn thành chuyên đề này!")
