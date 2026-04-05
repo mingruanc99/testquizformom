@@ -75,13 +75,18 @@ st.title("📚 Hệ thống ôn tập 1.000 câu")
 if not (start_range <= st.session_state.current_index < end_range):
     st.session_state.current_index = start_range
 
-row = df.iloc[st.session_state.current_index]
-
 # Hiển thị Progress Bar
 total_in_topic = end_range - start_range
-progress = (st.session_state.current_index - start_range + 1) / total_in_topic
-st.progress(progress)
-st.write(f"Câu hỏi {st.session_state.current_index} / {len(df)-1} (Trong mục: {selected_topic})")
+if total_in_topic > 0:
+    progress = (st.session_state.current_index - start_range + 1) / total_in_topic
+    st.progress(progress)
+    st.write(f"Câu hỏi {st.session_state.current_index - start_range + 1} / {total_in_topic} (Trong mục: {selected_topic})")
+    
+    # Chỉ hiển thị câu hỏi nếu có dữ liệu
+    row = df.iloc[st.session_state.current_index]
+    # ... (tiếp tục phần hiển thị câu hỏi bên dưới)
+else:
+    st.warning(f"Chuyên đề '{selected_topic}' hiện đang trống. Cậu kiểm tra lại file CSV nhé!")
 
 # Hiển thị câu hỏi
 st.markdown(f"### {row['Question']}")
