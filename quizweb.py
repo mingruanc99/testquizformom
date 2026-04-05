@@ -6,7 +6,6 @@ st.set_page_config(page_title="Quiz Bất động sản", page_icon="⚡", layou
 
 # 1. Load dữ liệu và phân tách chuyên đề
 @st.cache_data
-@st.cache_data
 def get_data():
     # Đọc file và loại bỏ các dòng hoàn toàn trống
     df = pd.read_csv("merged_all_quizzes.csv").dropna(how='all')
