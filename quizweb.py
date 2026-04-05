@@ -45,9 +45,19 @@ if 'answered' not in st.session_state:
 with st.sidebar:
     st.title("Quản lý Quiz ⚙️")
     
-    # Chọn chuyên đề
-    selected_topic = st.selectbox("Chọn chuyên đề ôn tập:", list(topics.keys()))
-    start_range, end_range = topics[selected_topic]
+    # 1. Lấy danh sách chuyên đề mới
+    topic_list = list(topics.keys())
+    
+    # 2. Tạo selectbox
+    selected_topic = st.selectbox("Chọn chuyên đề:", topic_list)
+    
+    # 🛡️ SỬA LỖI TẠI ĐÂY: Kiểm tra xem key có tồn tại không trước khi truy cập
+    if selected_topic in topics:
+        start_range, end_range = topics[selected_topic]
+    else:
+        # Nếu không tìm thấy (do đổi tên CSV), mặc định lấy chuyên đề đầu tiên
+        selected_topic = topic_list[0]
+        start_range, end_range = topics[selected_topic]
     
     # Reset điểm và tiến độ cho chuyên đề này
     if st.button("Làm lại chuyên đề này"):
