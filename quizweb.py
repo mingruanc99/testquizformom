@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 
 # Cấu hình trang
-st.set_page_config(page_title="Flash Quiz Pro", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Quiz Bất động sản", page_icon="⚡", layout="wide")
 
 # 1. Load dữ liệu và phân tách chuyên đề
 @st.cache_data
 def get_data():
-    df = pd.read_csv("merged_all_quizzes.csv")
+    df = pd.read_csv("alltest.csv")
     # Tìm vị trí các dòng tiêu đề chuyên đề
     topic_rows = df[df['Question'].str.contains('===', na=False)].index.tolist()
     
