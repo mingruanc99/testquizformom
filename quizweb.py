@@ -6,8 +6,19 @@ st.set_page_config(page_title="Quiz Bất động sản", page_icon="⚡", layou
 
 # 1. Load dữ liệu và phân tách chuyên đề
 @st.cache_data
+@st.cache_data
 def get_data():
-    df = pd.read_csv("alltest.csv")
+    # Đọc file và loại bỏ các dòng hoàn toàn trống
+    df = pd.read_csv("merged_all_quizzes.csv").dropna(how='all')
+    
+    # 🛡️ SỬA LỖI TẠI ĐÂY: Làm sạch tên cột (xóa khoảng trắng, ký tự ẩn)
+    df.columns = df.columns.str.strip().str.replace('^[^a-zA-Z0-9]+', '', regex=True)
+    
+    # Kiểm tra xem có cột 'Question' không, nếu không có thì báo lỗi trực quan
+    if 'Question' not in df.columns:
+        st.error(f"Không tìm thấy cột 'Question'. Các cột hiện có: {list(df.columns)}")
+        st.stop()
+
     # Tìm vị trí các dòng tiêu đề chuyên đề
     topic_rows = df[df['Question'].str.contains('===', na=False)].index.tolist()
     
@@ -17,12 +28,10 @@ def get_data():
     
     for idx in topic_rows:
         label = df.iloc[idx]['Question'].replace('=', '').strip()
-        # Lưu range câu hỏi cho chuyên đề trước đó
         topics[current_label] = (last_idx, idx)
         current_label = label
         last_idx = idx + 1
     
-    # Chuyên đề cuối cùng
     topics[current_label] = (last_idx, len(df))
     return df, topics
 
