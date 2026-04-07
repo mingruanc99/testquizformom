@@ -45,48 +45,31 @@ if 'answered' not in st.session_state:
 with st.sidebar:
     st.title("Quản lý Quiz ⚙️")
     
-    # 1. Chọn chuyên đề
+    # Chọn chuyên đề
     selected_topic = st.selectbox("Chọn chuyên đề ôn tập:", list(topics.keys()))
     start_range, end_range = topics[selected_topic]
     
-    # 2. Thanh Tìm kiếm (Search Engine thu nhỏ cho 1.000 câu)
-    st.divider()
-    search_query = st.text_input("🔍 Tìm kiếm câu hỏi (từ khóa):", "").strip().lower()
-    
-    # Logic lọc dữ liệu dựa trên Search (Phải chạy trước khi hiện Điểm và Nhảy câu)
-    display_df = df.iloc[start_range:end_range].copy()
-    if search_query:
-        display_df = display_df[display_df['Question'].str.lower().str.contains(search_query, na=False)]
-
-    # 3. Nút Reset (Lưu ý: Reset cả trạng thái Answered)
+    # Reset điểm và tiến độ cho chuyên đề này
     if st.button("Làm lại chuyên đề này"):
         st.session_state.score = 0
-        st.session_state.current_index = 0 # Reset về câu đầu tiên của kết quả lọc
+        st.session_state.current_index = start_range
         st.session_state.answered = False
         st.rerun()
 
     st.divider()
     
-    # 4. Tính năng nhảy câu (Max value phải dựa trên display_df để tránh IndexError)
+    # Tính năng nhảy câu để "Lưu quá trình"
     st.write("📍 Nhảy đến câu:")
-    max_val = max(0, len(display_df) - 1)
-    jump_index = st.number_input(f"Nhập số câu (0 - {max_val}):", 
-                                 min_value=0, max_value=max_val, 
-                                 value=min(st.session_state.current_index, max_val))
-    
+    jump_index = st.number_input(f"Nhập số câu (0 - {len(df)-1}):", 
+                                 min_value=0, max_value=len(df)-1, 
+                                 value=st.session_state.current_index)
     if st.button("Đi đến"):
         st.session_state.current_index = jump_index
         st.session_state.answered = False
         st.rerun()
 
     st.divider()
-    
-    # 5. HIỂN THỊ ĐIỂM (Cập nhật Real-time)
-    # Dùng st.metric nhìn cho chuyên nghiệp giống mấy con app AI cậu đang học
-    st.metric(label="🏆 Điểm số hiện tại", value=st.session_state.score)
-    
-    if search_query:
-        st.caption(f"🔎 Đang lọc được: {len(display_df)} câu")
+    st.metric("Điểm hiện tại", st.session_state.score)
 
 # --- GIAO DIỆN CHÍNH ---
 st.title("🚀 Chế độ ôn luyện tập trung")
@@ -164,28 +147,6 @@ if st.session_state.answered:
         else:
             st.balloons()
             st.success(f"🎉 Hoàn thành! Điểm của bạn: {st.session_state.score}")
-
-# Lọc dữ liệu - Chức năng tìm kiếm
-display_df = df.iloc[start_range:end_range].copy()
-
-# Nếu có từ khóa tìm kiếm, lọc tiếp trên display_df
-if search_query:
-    display_df = display_df[display_df['Question'].str.lower().str.contains(search_query, na=False)]
-    if display_df.empty:
-        st.warning(f"Không tìm thấy câu hỏi nào chứa từ khóa: '{search_query}'")
-        st.stop()
-
-# Đảm bảo index không vượt quá số lượng câu sau khi lọc
-max_idx = len(display_df) - 1
-if st.session_state.current_index > max_idx:
-    st.session_state.current_index = 0
-
-# Lấy câu hỏi hiện tại từ dataframe đã lọc
-row = display_df.iloc[st.session_state.current_index]
-st.write(f"Tìm thấy {len(display_df)} câu hỏi phù hợp.")
-progress_val = (st.session_state.current_index + 1) / len(display_df)
-st.progress(progress_val)
-
 
 st.divider()
 st.write(f"Tiến độ tổng thể: {st.session_state.current_index + 1} / {len(df)}")
